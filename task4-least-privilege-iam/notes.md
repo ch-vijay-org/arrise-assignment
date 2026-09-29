@@ -33,6 +33,17 @@ Therefore only:
   ecs:UpdateService
   ecs:DescribeServices
   ecs:DescribeClusters
-
-
   
+IAM:
+ECS task definitions typically reference:
+  Task Execution Role
+  Application Task Role
+
+The pipeline therefore requires:
+  iam:PassRole
+
+S3:
+The pipeline only needs to download build artifacts.
+Therefore only:
+  s3:ListBucket
+  s3:GetObject  
