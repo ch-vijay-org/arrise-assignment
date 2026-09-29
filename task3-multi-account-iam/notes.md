@@ -24,16 +24,14 @@ In this implementation:
  
 Account A
     |
-    +-- roleB
-           |
-           | sts:AssumeRole
-           v
+    roleB
+    | sts:AssumeRole
+           
 Account B
     |
-    +-- roleC
-           |
-           v
-       Specific S3 bucket
+    roleC
+     |
+    Specific S3 bucket
  
 Therefore, roleC can only be assumed through roleB rather than directly by other principals in Account A.
  
