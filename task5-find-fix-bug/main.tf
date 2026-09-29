@@ -19,6 +19,13 @@ data "aws_iam_policy_document" "roleC_trust" {
 }
 
 ##Fixed Permissions Policy
+resource "aws_iam_role" "roleC" {
+ 
+name = "roleC"
+ 
+assume_role_policy = data.aws_iam_policy_document.roleC_trust.json
+}
+
 resource "aws_iam_role_policy" "roleC_s3" {
 
   name = "roleC-s3-access"
