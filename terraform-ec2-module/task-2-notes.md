@@ -4,36 +4,24 @@ Pre-requisites:
   We should have a Dynamodb created for state locking.
   We can use use below commands to migrate local state to remotely
     terraform init -migrate-state
-Current Situation (As both use separate local state files:
-  Scenario 1: State Drift
-    Engineer A creates a new EC2 instance.
-    Engineer B's local state does not know about that change.
-    Engineer B applies using outdated state.
-    Terraform may attempt to recreate or modify resources unexpectedly.
-Scenario 2: Lost Updates
-    Both engineers make changes.
-    Each local state file diverges.
-    Whoever applies last effectively overwrites the "source of truth."
-Scenario 3: Resource Conflicts
-  Engineer A -> adds EC2 instance
-  Engineer B -> changes volume size
+    
+## Remote State & Locking
 
-Remote backend:
-  Everyone uses the same centralized state file.
-  Benefits:
-    Single source of truth
-    State shared across teams
-    Easy recovery using S3 versioning
-    Supports CI/CD pipelines
-DynamoDB:
-Terraform creates a lock record in DynamoDB.
-  LockID = ec2/dev/terraform.tfstate
-  Status = LOCKED
-  Owner = Engineer A
-  
-  Now If  Engineer B runs "terraform apply":
-    Error acquiring the state lock
-    Engineer B's deployment is blocked until Engineer A finishes.
-    After Engineer A completes lock will be released
-    Engineer B can then safely run:
-  
+The Terraform state has been migrated from local storage to an S3 backend.
+
+Benefits:
+- Centralized state management
+- Shared state across team members
+- State file versioning and recovery
+- Secure encrypted storage
+
+To prevent concurrent modifications, a DynamoDB table is used for state locking.
+
+Without locking:
+- Multiple users can apply changes simultaneously.
+- State corruption or infrastructure conflicts may occur.
+
+With DynamoDB locking:
+- Only one Terraform operation can modify the state at a time.
+- Additional users receive a lock error and must wait until the lock is released.
+- Prevents race conditions and protects infrastructure consistency.
